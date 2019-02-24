@@ -2,7 +2,7 @@
 
 #### test of sphinx/rst
 
-**can generate HTML and PDF files with the following commands**
+__can generate HTML and PDF files with the following commands__
 
 ```shell
 make html
