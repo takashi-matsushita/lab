@@ -217,31 +217,36 @@ df_cm = df_cm.set_index('Class')
 df_cm = df_cm.transpose()
 print(df_cm[['PPV', 'TPR', 'F1']])  # precision, recall, f1
 
-# check classes with f1 value < threshold
-f1 = df_cm[['F1', 'PPV', 'TPR']].to_dict()     
-threshold = 0.88
-print('c  f1   prec. recall')
-poor = []
-for key, data in f1.items():
-  if key != 'F1': continue
-  for idx, v in f1[key].items():
-    v = float(v)
-    if v < threshold:
-      poor.append(int(idx))
-      print('{} {:.2f} {:.2f} {:.2f}'.format(k49[int(idx)], v, float(f1['PPV'][idx]), float(f1['TPR'][idx])))
+# check the five least performant classes by f1 value
+nrow = 5
+poor = df_cm.sort_values(by=['F1'], ascending=False)[['F1', 'PPV', 'TPR']][-nrow:]
 
+# get failed predictions for poor performers
+to_check = list(map(int, poor.index.tolist()))
+indices = {}
+for idx in range(len(y_test)):
+  cat = argmax(y_test[idx])
+  if cat not in to_check: continue
+  if cat == predict_classes[idx]: continue
 
-# visual check of classes with poor performance
-nrow = len(poor)
-f, axes = plt.subplots(nrow, 5, sharex=True, sharey=True)
-for row in range(nrow):
+  if cat not in indices: indices[cat] = []
+  indices[cat].append((idx, predict_classes[idx]))
+
+# show failed images of poor performers
+ncol = 5
+row = 0
+f, axes = plt.subplots(nrow, ncol, sharex=True, sharey=True)
+for cat, _ in poor.iterrows():
   p = axes[row]
-  array = np.where(test_labels==poor[row])[0]
-  idxs = np.random.choice(array, 5)
-  for col in range(5):
-    p[col].imshow(test_images[idxs[col]], cmap='gray')
+  row += 1
+  cat = int(cat)
+  col = 0
+  for idx, guess in indices[cat]:
+    p[col].imshow(test_images[idx], cmap='gray')
     p[col].axis('off')
-    p[col].set_title('{}'.format(k49[poor[row]]))
+    p[col].set_title('{}: {}'.format(k49[cat], k49[guess]))
+    col += 1
+    if col == ncol: break
 
 plt.tight_layout()
 plt.show()
