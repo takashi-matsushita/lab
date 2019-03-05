@@ -217,7 +217,7 @@ df_cm = df_cm.set_index('Class')
 df_cm = df_cm.transpose()
 print(df_cm[['PPV', 'TPR', 'F1']])  # precision, recall, f1
 
-# check the five least performant classes by f1 value
+# check the five worst classifiers by f1 value
 nrow = 5
 poor = df_cm.sort_values(by=['F1'], ascending=False)[['F1', 'PPV', 'TPR']][-nrow:]
 
