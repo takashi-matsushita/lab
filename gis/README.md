@@ -7,3 +7,6 @@
 * 05k29-2.xls : [都道府県，男女別人口及び人口性比－総人口，日本人人口（平成29年10月１日現在）](http://www.stat.go.jp/data/jinsui/2017np/)
 
 * c01.csv : [男女別人口－全国，都道府県（大正９年～平成27年）](https://www.e-stat.go.jp)
+
+[//]: # get https://www.kaggle.com/lucabasa/dutch-energy/data for nld-electricity.py
+[//]: # Netherlands, Administrative areas from http://www.diva-gis.org/datadown for nld-electricity.py

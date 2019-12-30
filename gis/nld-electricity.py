@@ -108,7 +108,7 @@ cities = {
 def zip2province(city, code):
   for k, v in province.items(): 
     if code[:4] in v: return k
-  print('war> unknown zip code {}'.format(code))
+  #print('war> unknown zip code {}'.format(code))
   if city in cities:
     return cities[city]
   return 'NA'
@@ -131,16 +131,18 @@ for firm in firms:
     df['net_manager'] = net_manager[firm]
     elec.append(df)
 
-df = pd.concat(elec)
+df = pd.concat(elec, sort=True)
 
 ## make some columns
 df['smartmeters'] = df.smartmeter_perc/100*df.num_connections
 df['in_house'] = (100.-df.delivery_perc)/100.*df.annual_consume
 df['active_connections'] = df.perc_of_active_connections/100.*df.num_connections
 df['province'] = df.apply(lambda x: zip2province(x['city'], x['zipcode_from']), axis=1)
+# df.to_csv('df.csv')
 
 
 ## plot total consumption per year by provider
+print('dbg> plot total consumption per year by provider')
 data = df.groupby(['net_manager', 'year']).agg({'annual_consume': 'sum'})
 for k, v in net_manager.items():
   plt.plot(data.xs(v, level='net_manager'), label=v, marker='o')
@@ -152,6 +154,7 @@ plt.tight_layout()
 
 
 ## plot smartmeter fraction per year by provider
+print('dbg> plot smartmeter fraction per year by provider')
 data = df.groupby(['net_manager', 'year']).agg({'smartmeters': 'sum', 'num_connections': 'sum'})
 data = data.smartmeters/data.num_connections*100
 
@@ -165,6 +168,7 @@ plt.tight_layout()
 
 
 ## in-house power generation
+print('dbg> in-house power generation')
 data = df.groupby(['net_manager', 'year']).agg({'annual_consume': 'sum', 'in_house': 'sum'})
 data = data.in_house/data.annual_consume*100
 
@@ -178,6 +182,7 @@ plt.tight_layout()
 
 
 ## power consumption per connection
+print('dbg> power consumption per connection')
 data = df.groupby(['net_manager', 'year']).agg({'annual_consume': 'sum', 'active_connections': 'sum'})
 data = data.annual_consume/data.active_connections
 
@@ -191,6 +196,7 @@ plt.tight_layout()
 
 
 ## netherland province boundaries
+print('dbg> netherland province boundaries')
 path = r'NLD_adm/NLD_adm1.shp'
 nld = gpd.read_file(path)
 nld = nld[nld.ENGTYPE_1!='Water body']
@@ -198,6 +204,7 @@ nld.plot()
 
 
 ## plot smartmeter fraction per province in 2019
+print('dbg> plot smartmeter fraction per province in 2019')
 data = df[df.year==2019].groupby(['province']).agg({'smartmeters': 'sum', 'num_connections': 'sum'})
 data = data.smartmeters/data.num_connections*100
 
@@ -214,6 +221,7 @@ gv.save(fig, 'nld-fraction-smartmeter.html')
 
 
 ## in-house power generation
+print('dbg> in-house power generation')
 data = df[df.year==2019].groupby(['province']).agg({'annual_consume': 'sum', 'in_house': 'sum'})
 data = data.in_house/data.annual_consume*100
 
@@ -230,6 +238,7 @@ gv.save(fig, 'nld-inhouse-generation.html')
 
 
 ## power consumption per connection
+print('dbg> power consumption per connection')
 data = df[df.year==2019].groupby(['province']).agg({'annual_consume': 'sum', 'active_connections': 'sum'})
 data = data.annual_consume/data.active_connections
 
