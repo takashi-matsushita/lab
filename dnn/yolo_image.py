@@ -74,12 +74,13 @@ def worker(tid, urls):
           print('inf> thread {:2d}: unavailable ...{}'.format(tid, url))
           continue
 
-      resized_image = resize(img, IMG_SIZE)
-      path = "{}/{:04d}.jpg".format(OUTPUT_DIR, picid)
-      cv2.imwrite(path, resized_image)
-      print("inf> thread {:2d}: saving as picid = {}".format(tid, picid))
+      path = "{}/not_implemented.jpg".format(OUTPUT_DIR)
       with lock: # to avoid race condition
+        path = "{}/{:04d}.jpg".format(OUTPUT_DIR, picid)
+        print("inf> thread {:2d}: saving as picid = {}".format(tid, picid))
         picid += 1
+      resized_image = resize(img, IMG_SIZE)
+      cv2.imwrite(path, resized_image)
 
     except Exception as e:
       print("war> thread {:2d} skipping...{}".format(tid, str(e)))
